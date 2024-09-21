@@ -6,7 +6,9 @@ Il faut d'abord créer notre bot discord qui nous enverras les notifications, vo
 Le lien pour créer le bot directement : https://discord.com/developers/
 Pensez bien à copier le token de création, vous en aurez besoin pour run le bot.
 Dans notre cas nous n'aurons besoin que d'envoyer des messages en permissions : 
-*image
+<div align="center">
+    <img src="res/permissionsBot.png" width="300px"/>
+</div>
 
 # 2 : Personnaliser le script 
 
