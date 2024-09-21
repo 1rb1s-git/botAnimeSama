@@ -53,3 +53,7 @@ Vous devriez avoir reçu la notification si le scan est sorti, je vous invite à
 # 4 : Lancement automatique
 
 Tout l'intérêt du script est qu'il soit lancé de manière automatique. Vous pouvez l'ajouter à une tâche cron sur votre PC ou directement sur votre serveur NAS : https://www.maxy.fr/article/programmer-une-tache-cron-depuis-un-nas-synology
+Voici la commande que vous pouvez ajouter :
+```
+/bin/bash -c 'source chemin/.venvAnime/bin/activate && python chemin/updateManga.py'
+```
