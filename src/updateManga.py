@@ -4,34 +4,54 @@ import asyncio
 from datetime import date
 import calendar
 import locale
+import os
+from dotenv import load_dotenv
 
-def bool_find_lines_with_words(file_path, words):
+def bool_find_lines_with_words():
     compare = False
-    with open(file_path, 'r', encoding='utf-8') as file:
-        #on parcourt le site
-        for line in file:
-            if compare:
-                if all(word in line for word in words):
-                    #S'il n'est pas marqué en reporté alors c'est bon
-                    if "Reporté" not in line.strip():
-                        return True
-            #on vérifie si one piece est sorti aujourd'hui   
-            if "<!-- "+quelJour()+" -->" in line:
-                compare = True
-            #si on a parcouru aujourd'hui sans trouver one piece alors on verra demain
-            elif "<!-- "+quelJourDemain()+" -->" in line:
-                return False
-                          
+    words = os.getenv('WORDS').split(",")
+    with open(os.getcwd()+"/animeSamaIndex.html", 'r', encoding='utf-8') as file:
+        #on parcourt le site, si on est dimanche c'est la fonction showhide() qui apparait en suivant
+        if quelJour().lower()=="dimanche":
+            for line in file:
+                if compare:
+                    if all(word in line for word in words ):
+                        print("nouveau scan")
+                        #S'il n'est pas marqué en reporté alors c'est bon
+                        if "Reporté" not in line.strip():
+                            return True
+                #on vérifie si one piece est sorti aujourd'hui   
+                if "<!-- "+quelJour()+" -->" in line:
+                    compare = True
+                #si on a parcouru aujourd'hui sans trouver one piece alors on verra demain
+                elif "showhide()" in line:
+                    print("pas de nouvelle sortie")
+                    return False
+        else:
+            for line in file:
+                if compare:
+                    print(line)
+                    if all(word in line for word in words ):
+                        print("nouveau scan")
+                        #S'il n'est pas marqué en reporté alors c'est bon
+                        if "Reporté" not in line.strip():
+                            return True
+                #on vérifie si one piece est sorti aujourd'hui   
+                if "<!-- "+quelJour()+" -->" in line:
+                    print("on est "+quelJour())
+                    compare = True
+                #si on a parcouru aujourd'hui sans trouver one piece alors on verra demain
+                elif "<!-- "+quelJourDemain()+" -->" in line:
+                    return False       
     return False
 
-def bool_find_sortieAnime(file_path, anime):
+def bool_find_sortieAnime():
     compare = False
-    compare2 = False
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(os.getcwd()+"/animeSamaIndex.html", 'r', encoding='utf-8') as file:
         #on parcourt le site
         for line in file:
             if compare:
-                if anime in line:
+                if os.getenv("ANIME_ALEATOIRE") in line:
                     return True
             #si on arrive à cette étape alors on commence la comparaison
             if "Derniers scans ajoutés" in line:
@@ -43,8 +63,7 @@ def bool_find_sortieAnime(file_path, anime):
 
 def goCurl():
     # Open the file in write mode
-    file_path = "chemin/animeSamaIndex.html"
-    file_handle = open(file_path, 'w')
+    file_handle = open(os.getcwd()+"/animeSamaIndex.html", 'w')
     try:
         # Run the subprocess and redirect stdout to the file
         subprocess.check_call(['curl', "https://anime-sama.fr/"], stdout=file_handle)
@@ -79,10 +98,9 @@ def quelJourDemain():
     return nom_jour
 
 def main():
+    load_dotenv()
     #curl l'accueil
     goCurl()
-    file_path = 'chemin/animeSamaIndex.html'
-    wordsOnePiece = ['One Piece', 'Scan', 'VF']  # Remplacez par vos mots spécifiques
     client = discord.Client(intents=discord.Intents.default())
     client.messages = True
     client.message_content = True
@@ -91,15 +109,16 @@ def main():
     @client.event
     async def on_ready():
         print("Le bot est prêt !")
-        canal = client.get_channel(123)
-        if bool_find_lines_with_words(file_path, wordsOnePiece) :
-            await canal.send("Nouveau chapitre de OnePiece !")
-        if bool_find_sortieAnime(file_path, "One Punch Man") :
-            await canal.send("Nouveau chapitre de One Punch Man !")
+        canal = client.get_channel(int(os.getenv('CHANNEL')))
+        if bool_find_lines_with_words() :
+            await canal.send(os.getenv('MESSAGE_REGULIER'))
+        if bool_find_sortieAnime() :
+            await canal.send(os.getenv('MESSAGE_ALEATOIRE'))
         await asyncio.sleep(8)  # Attend 8 secondes
         #on ferme le tout
         await client.close()
     #on run le tout
-    client.run("***")
+    client.run(os.getenv('TOKEN'))
 
 main()
+
