@@ -39,22 +39,40 @@ Il faut maintenant modifier votre numéro de channel où seront envoyés les not
 Il faut ensuite mettre le token du bot dans TOKEN.
 Il peut être regénéré dans Bot > TOKEN > Reset Token si vous l'avez oubliez depuis de le portail développeur.
 
+## 2.4 : Ajout URL
+
+L'URL d'anime-sama est amener à evolué, je l'ai donc ajouté dans les variables d'environnements.  Vous pouvez obtenir l'actuel depuis https://anime-sama.pw/
+
 # 3 : Lancer le script
 
+# 3.1 : Requirements + lancement
+
 Il est maintenant temps de tester le script. Téléchargez le avec les requirements et lancez la commande : 
-```
+```sh
 pip install -r requirements.txt
 ```
 Maintenant 
-```
+```sh
 python3 update.py
 ```
 Vous devriez avoir reçu la notification si le scan est sorti, je vous invite à le tester sur les nouveaux scans du jour si ce n'est pas le cas. 
+
+## 3.2 : python 3.14 : audioop
+
+discord.py (ou py-cord) importe audioop pour gérer des fonctions audio/voice. Or, dans Python 3.14, audioop fait partie des modules “anciens” qui ont été retirés. 
+Il vaut donc mieux rester avec python 3.12
+```sh
+pyenv install 3.12.7
+pyenv local 3.12.7
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 # 4 : Lancement automatique
 
 Tout l'intérêt du script est qu'il soit lancé de manière automatique. Vous pouvez l'ajouter à une tâche cron sur votre PC ou directement sur votre serveur NAS : https://www.maxy.fr/article/programmer-une-tache-cron-depuis-un-nas-synology
 Voici la commande que vous pouvez ajouter :
-```
+```sh
 /bin/bash -c 'source chemin/.venvAnime/bin/activate && python chemin/updateManga.py'
 ```
