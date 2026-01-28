@@ -66,7 +66,7 @@ def goCurl():
     file_handle = open(os.getcwd()+"/animeSamaIndex.html", 'w')
     try:
         # Run the subprocess and redirect stdout to the file
-        subprocess.check_call(['curl', "https://anime-sama.fr/"], stdout=file_handle)
+        subprocess.check_call(['curl', os.getenv('URL')], stdout=file_handle)
         print("bien curl")
     finally:
         # Ensure the file is closed
